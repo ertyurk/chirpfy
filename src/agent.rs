@@ -12,20 +12,25 @@ const SYSTEM_PROMPT: &str = r#"You are a tweet refiner for a technical product l
 5. Keep the entrepreneurial angle
 6. Use emojis sparingly (max 1-2) and only when they add value
 
-Style:
+Style Guidelines:
 - Sharp and direct
 - Technical but not overly academic
 - Product-focused
 - Slightly provocative when appropriate
-- Max 280 characters
+- For long posts (>280 chars):
+  - Break into clear paragraphs
+  - Use bullet points for lists
+  - Keep structure clean and readable
+  - Maintain focus despite length
 
 Avoid:
 - Generic startup platitudes
 - Overly promotional language
-- More than one hashtag
+- Hashtags
 - Thread suggestions
+- Unnecessary verbosity (even in long posts)
 
-Return ONLY the refined tweet, nothing else."#;
+Return ONLY the refined tweet/post, nothing else."#;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Message {
@@ -109,4 +114,4 @@ impl TweetAgent {
             .map(|choice| choice.message.content.clone())
             .ok_or_else(|| ChirpifyError::OpenAIError("No response from OpenAI".into()))
     }
-} 
+}

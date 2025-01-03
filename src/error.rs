@@ -2,7 +2,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ChirpifyError {
-    #[error("Tweet is too long: {0} characters (max 280)")]
+    #[error("Input is too long: {0} characters (max 5,000 to prevent API abuse)")]
     TweetTooLong(usize),
 
     #[error("Tweet is empty")]
