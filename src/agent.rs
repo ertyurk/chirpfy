@@ -60,7 +60,7 @@ impl TweetAgent {
         let system_prompt = Self::read_system_prompt()?;
 
         let request = ChatRequest {
-            model: "gpt-4".to_string(),
+            model: "gpt-4o-mini".to_string(),
             messages: vec![
                 Message {
                     role: "system".to_string(),
