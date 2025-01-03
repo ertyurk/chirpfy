@@ -1,33 +1,33 @@
-# Chirpify (Rust CLI Tweet Refiner)
+# Chirpfy (Rust CLI Tweet Refiner)
 
 ## Overview
 
-A command-line tool written in Rust that leverages Rig and OpenAI to transform draft tweets into polished, tech-savvy content that reflects a product-focused entrepreneurial voice.
+A command-line tool written in Rust that uses OpenAI's GPT-4 to transform draft tweets/posts into polished, tech-savvy content that reflects a product-focused entrepreneurial voice.
 
 ## Goals
 
-- Transform verbose technical thoughts into concise, impactful tweets
+- Transform verbose technical thoughts into impactful content
 - Maintain technical credibility while being approachable
 - Focus on product/tech insights with entrepreneurial angles
 - Keep responses sharp and contrarian when appropriate
 
 ## User Flow
 
-1. User runs `chirpify "<draft tweet text>"`
-2. Rust program uses Rig to interface with OpenAI, applying the "Tweet Agent" prompt
-3. Program prints the refined tweet to stdout
+1. User runs `chirpify "<draft text>"`
+2. Rust program interfaces with OpenAI's API, applying the "Tweet Agent" prompt
+3. Program prints the refined content to stdout
 
 ## Functional Requirements
 
 - **CLI Command**:
   ```
-  chirpify "Shame on me that I did not consider rust before. Bottleneck from my mind got removed."
+  chirpfy "Shame on me that I did not consider rust before. Bottleneck from my mind got removed."
   ```
 - **Output**:
-  - A single line with the refined tweet (ex: "Just dove into Rust's ownership model - it's not just memory safety, it's a paradigm shift in how we think about systems. Why did I wait so long? 🦀")
+  - The refined content with proper formatting
+  - Support for both short tweets and longer posts (up to 5,000 chars)
 - **Configuration**:
   - OpenAI API key via environment variable
-  - Optional personality tweaks via config file
 - **Error Handling**:
   - Clear, actionable error messages
   - Graceful fallback for API failures
@@ -35,10 +35,11 @@ A command-line tool written in Rust that leverages Rig and OpenAI to transform d
 ## Technical Stack
 
 - **Rust** with modern idioms
-- **Rig** for OpenAI interactions and prompt management
-- **Clap** for CLI argument parsing
-- **Tokio** for async runtime
-- **Config** for configuration management
+- **reqwest** for OpenAI API interactions
+- **clap** for CLI argument parsing
+- **tokio** for async runtime
+- **serde** for JSON serialization
+- **thiserror** for error handling
 
 ## System Prompt
 
@@ -51,40 +52,47 @@ You are a tweet refiner for a technical product leader. Transform inputs into im
 5. Keep the entrepreneurial angle
 6. Use emojis sparingly (max 1-2) and only when they add value
 
-Style:
+Style Guidelines:
 - Sharp and direct
 - Technical but not overly academic
 - Product-focused
 - Slightly provocative when appropriate
-- Max 280 characters
+- For long posts (>280 chars):
+  - Break into clear paragraphs
+  - Use bullet points for lists
+  - Keep structure clean and readable
+  - Maintain focus despite length
 
 Avoid:
 - Generic startup platitudes
 - Overly promotional language
-- More than one hashtag
+- Hashtags
 - Thread suggestions
+- Unnecessary verbosity (even in long posts)
+
+Return ONLY the refined tweet/post, nothing else.
 ```
 
 ## High-Level Implementation
 
-1. **Initialize Rig Agent**:
-   - Configure with system prompt and OpenAI model
-   - Set up dynamic context if needed
+1. **Initialize OpenAI Client**:
+   - Configure with API key from environment
+   - Set up HTTP client with proper headers
 2. **Process Input**:
    - Parse CLI args with proper error handling
-   - Validate tweet length and content
+   - Validate input length (max 5,000 chars)
 3. **Generate Response**:
-   - Use Rig's completion API with retry logic
-   - Ensure output meets Twitter constraints
+   - Send request to OpenAI's Chat API
+   - Handle API errors gracefully
 4. **Output**:
-   - Print only the final tweet
+   - Print only the refined content
    - Exit with appropriate status code
 
 ## Example Usage
 
 ```bash
 # Command
-chirpify "Shame on me that I did not consider rust before. Bottleneck from my mind got removed."
+chirpfy "Shame on me that I did not consider rust before. Bottleneck from my mind got removed."
 
 # Potential Output
 "After years of Go & TypeScript, Rust's ownership model just clicked. It's not just about memory - it's about modeling complex systems correctly from day one. 🦀"
@@ -94,12 +102,11 @@ chirpify "Shame on me that I did not consider rust before. Bottleneck from my mi
 
 ```
 src/
-  ├── main.rs           # Entry point
-  ├── agent.rs          # Rig agent configuration
-  ├── config.rs         # Configuration management
-  ├── error.rs          # Error types
+  ├── main.rs           # Entry point and CLI handling
+  ├── agent.rs          # OpenAI agent implementation
+  ├── error.rs          # Error types and handling
   └── tweet/
-      ├── mod.rs        # Tweet module
+      ├── mod.rs        # Module definitions
       ├── refiner.rs    # Tweet refinement logic
-      └── validator.rs  # Tweet validation
+      └── validator.rs  # Input validation
 ```
