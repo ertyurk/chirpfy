@@ -2,35 +2,11 @@ use crate::error::{ChirpifyError, Result};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::env;
+use std::fs;
+use std::path::Path;
 
 const OPENAI_API_URL: &str = "https://api.openai.com/v1/chat/completions";
-const SYSTEM_PROMPT: &str = r#"You are a tweet refiner for a technical product leader. Transform inputs into impactful tweets that:
-1. Emphasize technical insights and product thinking
-2. Maintain professional credibility while being approachable
-3. Include contrarian views when relevant
-4. Focus on systems thinking and scalability
-5. Keep the entrepreneurial angle
-6. Use emojis sparingly (max 1-2) and only when they add value
-
-Style Guidelines:
-- Sharp and direct
-- Technical but not overly academic
-- Product-focused
-- Slightly provocative when appropriate
-- For long posts (>280 chars):
-  - Break into clear paragraphs
-  - Use bullet points for lists
-  - Keep structure clean and readable
-  - Maintain focus despite length
-
-Avoid:
-- Generic startup platitudes
-- Overly promotional language
-- Hashtags
-- Thread suggestions
-- Unnecessary verbosity (even in long posts)
-
-Return ONLY the refined tweet/post, nothing else."#;
+const DEFAULT_SYSTEM_PROMPT_PATH: &str = "SYSTEM_PROMPT.md";
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Message {
@@ -71,13 +47,24 @@ impl TweetAgent {
         })
     }
 
+    fn read_system_prompt() -> Result<String> {
+        let custom_path =
+            env::var("CHIRPFY_PROMPT_PATH").unwrap_or(DEFAULT_SYSTEM_PROMPT_PATH.to_string());
+        let path = Path::new(&custom_path);
+
+        fs::read_to_string(path)
+            .map_err(|e| ChirpifyError::ConfigError(format!("Failed to read system prompt: {}", e)))
+    }
+
     pub async fn refine(&self, tweet: &str) -> Result<String> {
+        let system_prompt = Self::read_system_prompt()?;
+
         let request = ChatRequest {
             model: "gpt-4".to_string(),
             messages: vec![
                 Message {
                     role: "system".to_string(),
-                    content: SYSTEM_PROMPT.to_string(),
+                    content: system_prompt,
                 },
                 Message {
                     role: "user".to_string(),

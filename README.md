@@ -17,6 +17,18 @@ A Rust CLI tool that refines your tweets using OpenAI's GPT-4. It transforms ver
 - OpenAI API key
 - macOS or Linux
 
+## Customizing the Prompt
+
+You can customize how Chirpfy refines your tweets in two ways:
+
+1. Edit `SYSTEM_PROMPT.md` directly in the project root
+2. Use your own prompt file by setting the environment variable:
+   ```bash
+   export CHIRPFY_PROMPT_PATH="/path/to/your/prompt.md"
+   ```
+
+See `SYSTEM_PROMPT.md` for the default prompt and use it as a template for your customizations.
+
 ## Installation
 
 ### 1. Set up OpenAI API key
