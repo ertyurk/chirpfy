@@ -11,71 +11,87 @@ A Rust CLI tool that refines your tweets using OpenAI's GPT-4. It transforms ver
 - Uses emojis sparingly (max 1-2)
 - Ensures tweets stay within Twitter's 280-character limit
 
-## Installation
-
-### Prerequisites
+## Prerequisites
 
 - Rust toolchain (1.70.0 or later)
 - OpenAI API key
+- macOS or Linux
 
-### Building from Source
+## Installation
 
-```bash
-# Clone the repository
-git clone https://github.com/your-username/chirpfy.git
-cd chirpfy
+### 1. Set up OpenAI API key
 
-# Build the project
-cargo build --release
-
-# Optional: Add to your PATH
-cp target/release/chirpfy /usr/local/bin/
-```
-
-### Configuration
-
-Set your OpenAI API key as an environment variable:
+Add to your `~/.zshrc`:
 
 ```bash
-export OPENAI_API_KEY='your-api-key-here'
-```
-
-For permanent configuration, add it to your shell's config file (~/.zshrc, ~/.bashrc, etc.):
-
-```bash
-echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.zshrc
+export OPENAI_API_KEY="your-api-key-here"
 source ~/.zshrc
+```
+
+### 2. Install Chirpfy
+
+```bash
+git clone https://github.com/ertyurk/chirpfy.git
+cd chirpfy
+cargo build --release
+sudo cp target/release/chirpfy /usr/local/bin/
+```
+
+### 3. Add Shell Conveniences (Optional)
+
+Add to your `~/.zshrc`:
+
+```bash
+# Short alias
+alias tw="chirpfy"
+
+# Function for quote-free usage
+tweet() {
+    chirpfy "$*"
+}
 ```
 
 ## Usage
 
 ```bash
-# Basic usage
-chirpfy "Your draft tweet here"
+# Standard way
+chirpfy "Just learned about Rust's ownership model"
 
-# Example
-chirpfy "Shame on me that I did not consider rust before. Bottleneck from my mind got removed."
-# Output: "After years of Go & TypeScript, Rust's ownership model just clicked. It's not just about memory - it's about modeling complex systems correctly from day one. 🦀"
+# Using alias (after adding shell conveniences)
+tw "Just learned about Rust's ownership model"
+
+# Using function (no quotes needed)
+tweet Just learned about Rust's ownership model
+```
+
+### Example
+
+```bash
+$ tw "Shame on me that I did not consider rust before. Bottleneck from my mind got removed."
+"After years of Go & TypeScript, Rust's ownership model just clicked. It's not just about memory - it's about modeling complex systems correctly from day one. 🦀"
+```
+
+## Development
+
+```bash
+# Run from source
+cargo run -- "Your tweet"
+
+# Run tests
+cargo test
+
+# Run with debug output
+RUST_LOG=debug cargo run -- "Your tweet"
 ```
 
 ## Error Handling
 
-Chirpfy provides clear error messages for common issues:
+Chirpfy provides clear error messages for:
 
 - Tweet length exceeds 280 characters
 - Empty tweet input
 - Missing OpenAI API key
 - API communication errors
-
-## Development
-
-```bash
-# Run tests
-cargo test
-
-# Run with debug output
-RUST_LOG=debug cargo run -- "Your tweet here"
-```
 
 ## License
 
