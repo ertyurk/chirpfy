@@ -2,6 +2,17 @@
 
 A Rust CLI tool that refines your tweets using OpenAI's GPT-4. It transforms verbose technical thoughts into concise, impactful tweets while maintaining your professional voice.
 
+## ⚠️ Fun Project Warning
+
+This is a fun side project I built to showcase Rust and OpenAI's API while demonstrating AI agents in a nutshell. While it works well for tweet refinement, I'm not actively maintaining it due to other commitments (full-time job + personal projects). Feel free to fork and modify, but note:
+
+- No guarantee of PR reviews/acceptance
+- No active feature development planned
+- Built mainly for personal use in Cursor IDE
+- May need updates as OpenAI's API evolves
+
+If you find it useful, great! Just don't rely on it for anything mission-critical.
+
 ## Features
 
 - Transforms draft tweets into polished, tech-savvy content
