@@ -2,11 +2,9 @@ use crate::error::{ChirpifyError, Result};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::env;
-use std::fs;
-use std::path::Path;
 
 const OPENAI_API_URL: &str = "https://api.openai.com/v1/chat/completions";
-const DEFAULT_SYSTEM_PROMPT_PATH: &str = "SYSTEM_PROMPT.md";
+const SYSTEM_PROMPT: &str = include_str!("../SYSTEM_PROMPT.md");
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Message {
@@ -47,24 +45,13 @@ impl TweetAgent {
         })
     }
 
-    fn read_system_prompt() -> Result<String> {
-        let custom_path =
-            env::var("CHIRPFY_PROMPT_PATH").unwrap_or(DEFAULT_SYSTEM_PROMPT_PATH.to_string());
-        let path = Path::new(&custom_path);
-
-        fs::read_to_string(path)
-            .map_err(|e| ChirpifyError::ConfigError(format!("Failed to read system prompt: {}", e)))
-    }
-
     pub async fn refine(&self, tweet: &str) -> Result<String> {
-        let system_prompt = Self::read_system_prompt()?;
-
         let request = ChatRequest {
             model: "gpt-4o-mini".to_string(),
             messages: vec![
                 Message {
                     role: "system".to_string(),
-                    content: system_prompt,
+                    content: SYSTEM_PROMPT.to_string(),
                 },
                 Message {
                     role: "user".to_string(),
